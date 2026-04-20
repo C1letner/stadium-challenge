@@ -2,6 +2,12 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
+function formatDistance(totalInches) {
+  const feet = Math.floor(totalInches / 12)
+  const inches = Math.round(totalInches % 12)
+  return `${feet}' ${inches}"`
+}
+
 export default function Leaderboard() {
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -17,7 +23,6 @@ export default function Leaderboard() {
       return
     }
 
-    // Get best shot per player
     const best = {}
     data.forEach((shot) => {
       if (!best[shot.player_id] || shot.distance_to_pin < best[shot.player_id].distance_to_pin) {
@@ -47,7 +52,8 @@ export default function Leaderboard() {
     <main className="min-h-screen bg-gray-900 text-white p-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold text-green-400 text-center mb-2">⛳ Leaderboard</h1>
-        <p className="text-gray-400 text-center mb-8">Closest to the pin wins — updates every 10 seconds</p>
+        <p className="text-gray-400 text-center mb-2">Million Dollar Mountain Challenge</p>
+        <p className="text-gray-500 text-center text-sm mb-8">Closest to the pin wins — updates every 10 seconds</p>
 
         {loading && <p className="text-center text-gray-400">Loading...</p>}
 
@@ -82,7 +88,7 @@ export default function Leaderboard() {
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-green-400">
-                {player.distance_to_pin}'
+                {formatDistance(player.distance_to_pin)}
               </p>
               <p className="text-gray-400 text-sm">from pin</p>
             </div>

@@ -2,6 +2,12 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
+function formatDistance(totalInches) {
+  const feet = Math.floor(totalInches / 12)
+  const inches = Math.round(totalInches % 12)
+  return `${feet}' ${inches}"`
+}
+
 export default function TVDisplay() {
   const [players, setPlayers] = useState([])
   const [lastUpdated, setLastUpdated] = useState('')
@@ -42,7 +48,7 @@ export default function TVDisplay() {
   return (
     <main className="min-h-screen bg-black text-white p-12 flex flex-col">
       <div className="text-center mb-10">
-        <h1 className="text-7xl font-black text-green-400 mb-2">⛳ STADIUM CHALLENGE</h1>
+        <h1 className="text-7xl font-black text-green-400 mb-2">⛳ MILLION DOLLAR MOUNTAIN CHALLENGE</h1>
         <p className="text-3xl text-gray-400">Mr Lucky's Golf — Closest to the Pin Wins</p>
       </div>
 
@@ -77,7 +83,7 @@ export default function TVDisplay() {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-6xl font-black">{player.distance_to_pin}'</p>
+              <p className="text-6xl font-black">{formatDistance(player.distance_to_pin)}</p>
               <p className="text-xl opacity-70">from pin</p>
             </div>
           </div>
