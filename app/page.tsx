@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-8">
       <div className="max-w-md w-full text-center">
-        <h1 className="text-5xl font-bold text-green-400 mb-4">⛳ Stadium Challenge</h1>
+        <h1 className="text-5xl font-bold text-green-400 mb-4">⛳ Million Dollar Mountain Challenge</h1>
         <p className="text-xl text-gray-300 mb-2">Mr Lucky's Golf</p>
         <p className="text-gray-400 mb-12">Closest to the pin wins</p>
 
