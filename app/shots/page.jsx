@@ -2,7 +2,11 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
+const STAFF_PIN = '1234'
+
 export default function ShotEntry() {
+  const [pin, setPin] = useState('')
+  const [authenticated, setAuthenticated] = useState(false)
   const [players, setPlayers] = useState([])
   const [selectedPlayer, setSelectedPlayer] = useState('')
   const [distance, setDistance] = useState('')
@@ -11,15 +15,27 @@ export default function ShotEntry() {
   const [success, setSuccess] = useState(false)
 
   useEffect(() => {
-    const fetchPlayers = async () => {
-      const { data } = await supabase
-        .from('players')
-        .select('id, name')
-        .order('name')
-      setPlayers(data || [])
+    if (authenticated) {
+      const fetchPlayers = async () => {
+        const { data } = await supabase
+          .from('players')
+          .select('id, name')
+          .order('name')
+        setPlayers(data || [])
+      }
+      fetchPlayers()
     }
-    fetchPlayers()
-  }, [])
+  }, [authenticated])
+
+  const handlePin = (e) => {
+    e.preventDefault()
+    if (pin === STAFF_PIN) {
+      setAuthenticated(true)
+    } else {
+      alert('Incorrect PIN. Please try again.')
+      setPin('')
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -45,6 +61,32 @@ export default function ShotEntry() {
       setSelectedPlayer('')
     }
     setLoading(false)
+  }
+
+  if (!authenticated) {
+    return (
+      <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-8">
+        <div className="max-w-sm w-full text-center">
+          <h1 className="text-4xl font-bold text-green-400 mb-2">🔒 Staff Access</h1>
+          <p className="text-gray-400 mb-8">Enter your staff PIN to continue</p>
+          <form onSubmit={handlePin} className="flex flex-col gap-4">
+            <input
+              type="password"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              placeholder="Enter PIN"
+              className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 text-center text-2xl tracking-widest focus:outline-none focus:border-green-400"
+            />
+            <button
+              type="submit"
+              className="bg-green-500 hover:bg-green-400 text-white text-xl font-bold py-4 px-8 rounded-xl"
+            >
+              Enter
+            </button>
+          </form>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -76,17 +118,18 @@ export default function ShotEntry() {
           </div>
 
           <div>
-            <label className="text-gray-300 text-sm mb-1 block">Distance to Pin (feet)</label>
-            <input
-              type="number"
-              value={distance}
-              onChange={(e) => setDistance(e.target.value)}
-              required
-              min="0"
-              step="0.1"
-              className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
-              placeholder="e.g. 4.5"
-            />
+            <label className="text-gray-300 text-sm mb-1 block">Distance to Pin</label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={distance}
+                onChange={(e) => setDistance(e.target.value)}
+                required
+                min="0"
+                placeholder="Feet"
+                className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
+              />
+            </div>
           </div>
 
           <div className="flex items-center gap-3 bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
