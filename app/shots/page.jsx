@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
-const STAFF_PIN = '1234'
+const STAFF_PIN = '1977'
 
 export default function ShotEntry() {
   const [pin, setPin] = useState('')
