@@ -9,7 +9,8 @@ export default function ShotEntry() {
   const [authenticated, setAuthenticated] = useState(false)
   const [players, setPlayers] = useState([])
   const [selectedPlayer, setSelectedPlayer] = useState('')
-  const [distance, setDistance] = useState('')
+  const [feet, setFeet] = useState('')
+  const [inches, setInches] = useState('')
   const [isHoleInOne, setIsHoleInOne] = useState(false)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -42,11 +43,13 @@ export default function ShotEntry() {
     setLoading(true)
     setSuccess(false)
 
+    const totalInches = (parseFloat(feet) * 12) + parseFloat(inches || 0)
+
     const { error } = await supabase
       .from('shot_attempts')
       .insert([{
         player_id: selectedPlayer,
-        distance_to_pin: parseFloat(distance),
+        distance_to_pin: totalInches,
         is_hole_in_one: isHoleInOne,
         attempt_number: 1
       }])
@@ -56,7 +59,8 @@ export default function ShotEntry() {
       console.error(error)
     } else {
       setSuccess(true)
-      setDistance('')
+      setFeet('')
+      setInches('')
       setIsHoleInOne(false)
       setSelectedPlayer('')
     }
@@ -119,16 +123,31 @@ export default function ShotEntry() {
 
           <div>
             <label className="text-gray-300 text-sm mb-1 block">Distance to Pin</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                value={distance}
-                onChange={(e) => setDistance(e.target.value)}
-                required
-                min="0"
-                placeholder="Feet"
-                className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
-              />
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <input
+                  type="number"
+                  value={feet}
+                  onChange={(e) => setFeet(e.target.value)}
+                  required
+                  min="0"
+                  placeholder="Feet"
+                  className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
+                />
+                <p className="text-gray-500 text-xs text-center mt-1">Feet</p>
+              </div>
+              <div className="flex-1">
+                <input
+                  type="number"
+                  value={inches}
+                  onChange={(e) => setInches(e.target.value)}
+                  min="0"
+                  max="11"
+                  placeholder="Inches"
+                  className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
+                />
+                <p className="text-gray-500 text-xs text-center mt-1">Inches</p>
+              </div>
             </div>
           </div>
 
