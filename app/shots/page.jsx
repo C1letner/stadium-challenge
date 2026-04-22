@@ -24,17 +24,12 @@ export default function ShotEntry() {
   }, [authenticated])
 
   const fetchPlayers = async () => {
-    const { data } = await supabase
-      .from('players')
-      .select('id, name')
-      .order('name')
+    const { data } = await supabase.from('players').select('id, name').order('name')
     setPlayers(data || [])
   }
 
   const fetchShotPlayerIds = async () => {
-    const { data } = await supabase
-      .from('shot_attempts')
-      .select('player_id')
+    const { data } = await supabase.from('shot_attempts').select('player_id')
     const ids = [...new Set(data?.map(s => s.player_id) || [])]
     setShotPlayerIds(ids)
   }
@@ -53,21 +48,15 @@ export default function ShotEntry() {
     e.preventDefault()
     setLoading(true)
     setSuccess(false)
-
     const totalInches = (parseFloat(feet) * 12) + parseFloat(inches || 0)
-
-    const { error } = await supabase
-      .from('shot_attempts')
-      .insert([{
-        player_id: selectedPlayer,
-        distance_to_pin: totalInches,
-        is_hole_in_one: isHoleInOne,
-        attempt_number: 1
-      }])
-
+    const { error } = await supabase.from('shot_attempts').insert([{
+      player_id: selectedPlayer,
+      distance_to_pin: totalInches,
+      is_hole_in_one: isHoleInOne,
+      attempt_number: 1
+    }])
     if (error) {
       alert('Something went wrong. Please try again.')
-      console.error(error)
     } else {
       setSuccess(true)
       setFeet('')
@@ -93,10 +82,7 @@ export default function ShotEntry() {
               placeholder="Enter PIN"
               className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 text-center text-2xl tracking-widest focus:outline-none focus:border-green-400"
             />
-            <button
-              type="submit"
-              className="bg-green-500 hover:bg-green-400 text-white text-xl font-bold py-4 px-8 rounded-xl"
-            >
+            <button type="submit" className="bg-green-500 hover:bg-green-400 text-white text-xl font-bold py-4 px-8 rounded-xl">
               Enter
             </button>
           </form>
@@ -127,3 +113,65 @@ export default function ShotEntry() {
               className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
             >
               <option value="">-- Choose a player --</option>
+              {players.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {shotPlayerIds.includes(p.id) ? '🟢 ' : '⚪ '}{p.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-gray-500 text-xs mt-1">🟢 = shot recorded &nbsp; ⚪ = no shot yet</p>
+          </div>
+
+          <div>
+            <label className="text-gray-300 text-sm mb-1 block">Distance to Pin</label>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <input
+                  type="number"
+                  value={feet}
+                  onChange={(e) => setFeet(e.target.value)}
+                  required
+                  min="0"
+                  placeholder="Feet"
+                  className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
+                />
+                <p className="text-gray-500 text-xs text-center mt-1">Feet</p>
+              </div>
+              <div className="flex-1">
+                <input
+                  type="number"
+                  value={inches}
+                  onChange={(e) => setInches(e.target.value)}
+                  min="0"
+                  max="11"
+                  placeholder="Inches"
+                  className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
+                />
+                <p className="text-gray-500 text-xs text-center mt-1">Inches</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
+            <input
+              type="checkbox"
+              id="hio"
+              checked={isHoleInOne}
+              onChange={(e) => setIsHoleInOne(e.target.checked)}
+              className="w-5 h-5 accent-green-400"
+            />
+            <label htmlFor="hio" className="text-white text-lg">🕳️ Hole in One!</label>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-green-500 hover:bg-green-400 disabled:bg-gray-600 text-white text-xl font-bold py-4 px-8 rounded-xl mt-2"
+          >
+            {loading ? 'Saving...' : 'Record Shot'}
+          </button>
+        </form>
+      </div>
+    </main>
+  )
+}
