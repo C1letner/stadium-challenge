@@ -8,6 +8,7 @@ export default function ShotEntry() {
   const [pin, setPin] = useState('')
   const [authenticated, setAuthenticated] = useState(false)
   const [players, setPlayers] = useState([])
+  const [shotPlayerIds, setShotPlayerIds] = useState([])
   const [selectedPlayer, setSelectedPlayer] = useState('')
   const [feet, setFeet] = useState('')
   const [inches, setInches] = useState('')
@@ -17,16 +18,26 @@ export default function ShotEntry() {
 
   useEffect(() => {
     if (authenticated) {
-      const fetchPlayers = async () => {
-        const { data } = await supabase
-          .from('players')
-          .select('id, name')
-          .order('name')
-        setPlayers(data || [])
-      }
       fetchPlayers()
+      fetchShotPlayerIds()
     }
   }, [authenticated])
+
+  const fetchPlayers = async () => {
+    const { data } = await supabase
+      .from('players')
+      .select('id, name')
+      .order('name')
+    setPlayers(data || [])
+  }
+
+  const fetchShotPlayerIds = async () => {
+    const { data } = await supabase
+      .from('shot_attempts')
+      .select('player_id')
+    const ids = [...new Set(data?.map(s => s.player_id) || [])]
+    setShotPlayerIds(ids)
+  }
 
   const handlePin = (e) => {
     e.preventDefault()
@@ -63,6 +74,7 @@ export default function ShotEntry() {
       setInches('')
       setIsHoleInOne(false)
       setSelectedPlayer('')
+      fetchShotPlayerIds()
     }
     setLoading(false)
   }
@@ -115,62 +127,3 @@ export default function ShotEntry() {
               className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
             >
               <option value="">-- Choose a player --</option>
-              {players.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="text-gray-300 text-sm mb-1 block">Distance to Pin</label>
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <input
-                  type="number"
-                  value={feet}
-                  onChange={(e) => setFeet(e.target.value)}
-                  required
-                  min="0"
-                  placeholder="Feet"
-                  className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
-                />
-                <p className="text-gray-500 text-xs text-center mt-1">Feet</p>
-              </div>
-              <div className="flex-1">
-                <input
-                  type="number"
-                  value={inches}
-                  onChange={(e) => setInches(e.target.value)}
-                  min="0"
-                  max="11"
-                  placeholder="Inches"
-                  className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
-                />
-                <p className="text-gray-500 text-xs text-center mt-1">Inches</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
-            <input
-              type="checkbox"
-              id="hio"
-              checked={isHoleInOne}
-              onChange={(e) => setIsHoleInOne(e.target.checked)}
-              className="w-5 h-5 accent-green-400"
-            />
-            <label htmlFor="hio" className="text-white text-lg">🕳️ Hole in One!</label>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-green-500 hover:bg-green-400 disabled:bg-gray-600 text-white text-xl font-bold py-4 px-8 rounded-xl mt-2"
-          >
-            {loading ? 'Saving...' : 'Record Shot'}
-          </button>
-        </form>
-      </div>
-    </main>
-  )
-}
