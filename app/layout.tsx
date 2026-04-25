@@ -27,19 +27,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900`}>
-        <header className="flex items-center gap-3 px-6 py-3 bg-gray-800 border-b border-gray-700">
-          <Link href="/">
+        <header className="flex items-center justify-between px-6 py-3 bg-gray-800 border-b border-gray-700">
+          <Link href="/" className="flex items-center gap-3">
             <Image
               src="/Mr luckys - Social logo.png"
               alt="Mr Lucky's Golf"
               width={40}
               height={40}
-              className="rounded-full cursor-pointer"
+              className="rounded-full"
             />
+            <span className="text-green-400 font-bold text-lg hover:text-green-300">Mr Lucky's Golf</span>
           </Link>
-          <Link href="/" className="text-green-400 font-bold text-lg hover:text-green-300">
-            Mr Lucky's Golf
-          </Link>
+          <nav className="flex items-center gap-4">
+            <Link href="/register" className="text-gray-300 hover:text-green-400 text-sm font-medium">Register</Link>
+            <Link href="/leaderboard" className="text-gray-300 hover:text-green-400 text-sm font-medium">Leaderboard</Link>
+            <Link href="/shots" className="text-gray-300 hover:text-green-400 text-sm font-medium">Staff</Link>
+            <Link href="/admin" className="text-gray-300 hover:text-green-400 text-sm font-medium">Admin</Link>
+          </nav>
         </header>
         {children}
       </body>
