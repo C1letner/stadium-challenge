@@ -1,12 +1,20 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-8">
       <div className="max-w-md w-full text-center">
-        <h1 className="text-5xl font-bold text-green-400 mb-4">⛳ Million Dollar Mountain Challenge</h1>
+        <Image
+          src="/Mr luckys - Social logo.png"
+          alt="Mr Lucky's Golf"
+          width={160}
+          height={160}
+          className="mx-auto mb-6 rounded-full"
+        />
+        <h1 className="text-4xl font-bold text-green-400 mb-2">Million Dollar Mountain Challenge</h1>
         <p className="text-xl text-gray-300 mb-2">Mr Lucky's Golf</p>
-        <p className="text-gray-400 mb-12">Closest to the pin wins</p>
+        <p className="text-gray-400 mb-10">Closest to the pin wins</p>
 
         <div className="flex flex-col gap-4">
           <Link href="/register">
