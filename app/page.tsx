@@ -1,32 +1,5 @@
 import Link from 'next/link'
-
-function LogoMark({ size = 80 }: { size?: number }) {
-  const s = size
-  const cx = s / 2
-  const top = s * 0.35
-  const mid = s * 0.88
-  const left = s * 0.1
-  const right = s * 0.9
-  const m1l = s * 0.2
-  const m1r = s * 0.8
-  const m2l = s * 0.3
-  const m2r = s * 0.7
-  const m3l = s * 0.38
-  const m3r = s * 0.62
-  const stickX = cx
-  const stickTop = s * 0.04
-  const stickBottom = top
-  return (
-    <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} fill="none">
-      <line x1={stickX} y1={stickBottom} x2={stickX} y2={stickTop} stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round"/>
-      <polygon points={`${stickX},${stickTop} ${stickX + s*0.22},${stickTop + s*0.09} ${stickX},${stickTop + s*0.18}`} fill="#38bdf8"/>
-      <polygon points={`${cx},${top} ${left},${mid} ${right},${mid}`} stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
-      <polygon points={`${cx},${top + s*0.08} ${m1l},${mid} ${m1r},${mid}`} fill="#1e293b" stroke="#60a5fa" strokeWidth="1.5"/>
-      <polygon points={`${cx},${top + s*0.16} ${m2l},${mid} ${m2r},${mid}`} fill="#3b82f6"/>
-      <polygon points={`${cx},${top + s*0.24} ${m3l},${mid} ${m3r},${mid}`} fill="#60a5fa"/>
-    </svg>
-  )
-}
+import Image from 'next/image'
 
 export default function Home() {
   return (
@@ -38,9 +11,13 @@ export default function Home() {
         
         <div className="relative max-w-lg mx-auto px-6 pt-12 pb-10 text-center">
           <div className="flex justify-center mb-6">
-            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4">
-              <LogoMark size={80} />
-            </div>
+            <Image
+              src="/LUCKYS LOGO UPDATED.png"
+              alt="Mr Lucky's Golf"
+              width={140}
+              height={140}
+              className="rounded-2xl shadow-2xl shadow-blue-900/50"
+            />
           </div>
           <div className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 tracking-widest uppercase">
             Live Qualifier
