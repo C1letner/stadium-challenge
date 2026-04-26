@@ -1,23 +1,47 @@
 import Link from 'next/link'
-import Image from 'next/image'
+
+function LogoMark({ size = 80 }: { size?: number }) {
+  const s = size
+  const cx = s / 2
+  const top = s * 0.15
+  const mid = s * 0.85
+  const left = s * 0.1
+  const right = s * 0.9
+  const m1l = s * 0.2
+  const m1r = s * 0.8
+  const m2l = s * 0.3
+  const m2r = s * 0.7
+  const m3l = s * 0.38
+  const m3r = s * 0.62
+  const stickX = cx
+  const stickTop = top - s * 0.12
+  const stickBottom = top + s * 0.02
+  return (
+    <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} fill="none">
+      <polygon points={`${cx},${top} ${left},${mid} ${right},${mid}`} stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+      <polygon points={`${cx},${top + s*0.1} ${m1l},${mid} ${m1r},${mid}`} fill="#1e293b" stroke="#60a5fa" strokeWidth="1.5"/>
+      <polygon points={`${cx},${top + s*0.2} ${m2l},${mid} ${m2r},${mid}`} fill="#3b82f6"/>
+      <polygon points={`${cx},${top + s*0.3} ${m3l},${mid} ${m3r},${mid}`} fill="#60a5fa"/>
+      <line x1={stickX} y1={stickBottom} x2={stickX} y2={stickTop} stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round"/>
+      <polygon points={`${stickX},${stickTop} ${stickX + s*0.18},${stickTop + s*0.08} ${stickX},${stickTop + s*0.16}`} fill="#38bdf8"/>
+    </svg>
+  )
+}
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-950 text-white">
-      {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-gray-950 to-gray-950"></div>
         <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600 rounded-full filter blur-3xl opacity-10"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500 rounded-full filter blur-3xl opacity-10"></div>
         
         <div className="relative max-w-lg mx-auto px-6 pt-12 pb-10 text-center">
-          <Image
-            src="/Mr luckys - Social logo.png"
-            alt="Mr Lucky's Golf"
-            width={100}
-            height={100}
-            className="mx-auto mb-6 rounded-full ring-4 ring-blue-500 ring-offset-4 ring-offset-gray-950"
-          />
+          <div className="flex justify-center mb-6">
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+              <LogoMark size={80} />
+            </div>
+          </div>
           <div className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 tracking-widest uppercase">
             Live Qualifier
           </div>
@@ -45,7 +69,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Stats Bar */}
       <div className="bg-gray-900 border-y border-gray-800 px-6 py-4">
         <div className="max-w-lg mx-auto grid grid-cols-3 gap-4 text-center">
           <div>
@@ -63,7 +86,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Packages */}
       <div className="max-w-lg mx-auto px-6 py-10">
         <h2 className="text-xl font-black text-white mb-1">Shot Packages</h2>
         <p className="text-gray-500 text-sm mb-6">Buy shots to qualify for the finale</p>
