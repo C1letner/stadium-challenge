@@ -39,7 +39,7 @@ export default function ShotEntry() {
     if (pin === STAFF_PIN) {
       setAuthenticated(true)
     } else {
-      alert('Incorrect PIN. Please try again.')
+      alert('Incorrect PIN.')
       setPin('')
     }
   }
@@ -56,7 +56,7 @@ export default function ShotEntry() {
       attempt_number: 1
     }])
     if (error) {
-      alert('Something went wrong. Please try again.')
+      alert('Something went wrong.')
     } else {
       setSuccess(true)
       setFeet('')
@@ -70,19 +70,24 @@ export default function ShotEntry() {
 
   if (!authenticated) {
     return (
-      <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-8">
-        <div className="max-w-sm w-full text-center">
-          <h1 className="text-4xl font-bold text-green-400 mb-2">🔒 Staff Access</h1>
-          <p className="text-gray-400 mb-8">Enter your staff PIN to continue</p>
+      <main className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-8">
+        <div className="max-w-sm w-full">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600/20 border border-blue-500/30 rounded-2xl mb-4">
+              <span className="text-3xl">🔒</span>
+            </div>
+            <h1 className="text-3xl font-black text-white mb-1">Staff Access</h1>
+            <p className="text-gray-500">Enter your PIN to continue</p>
+          </div>
           <form onSubmit={handlePin} className="flex flex-col gap-4">
             <input
               type="password"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               placeholder="Enter PIN"
-              className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 text-center text-2xl tracking-widest focus:outline-none focus:border-green-400"
+              className="w-full bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-4 text-center text-2xl tracking-widest outline-none transition-colors"
             />
-            <button type="submit" className="bg-green-500 hover:bg-green-400 text-white text-xl font-bold py-4 px-8 rounded-xl">
+            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl transition-all">
               Enter
             </button>
           </form>
@@ -92,83 +97,100 @@ export default function ShotEntry() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-4xl font-bold text-green-400 text-center mb-2">🎯 Shot Entry</h1>
-        <p className="text-gray-400 text-center mb-8">Staff use only — record player shots</p>
+    <main className="min-h-screen bg-gray-950 text-white">
+      <div className="relative overflow-hidden bg-gray-900 border-b border-gray-800">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-gray-900 opacity-50"></div>
+        <div className="relative max-w-lg mx-auto px-6 py-8 text-center">
+          <div className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 tracking-widest uppercase">
+            Staff Only
+          </div>
+          <h1 className="text-3xl font-black text-white mb-1">🎯 Shot Entry</h1>
+          <p className="text-gray-400">Record player shots for the leaderboard</p>
+        </div>
+      </div>
 
+      <div className="max-w-lg mx-auto px-6 py-8">
         {success && (
-          <div className="bg-green-800 border border-green-500 text-green-200 px-4 py-3 rounded-xl mb-6 text-center">
+          <div className="bg-green-600/10 border border-green-500/30 text-green-400 px-4 py-4 rounded-xl mb-6 text-center font-bold">
             ✅ Shot recorded! Leaderboard updated.
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div>
-            <label className="text-gray-300 text-sm mb-1 block">Select Player</label>
+            <label className="text-gray-400 text-xs uppercase tracking-widest mb-2 block">Select Player</label>
             <select
               value={selectedPlayer}
               onChange={(e) => setSelectedPlayer(e.target.value)}
               required
-              className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
+              className="w-full bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition-colors"
             >
-              <option value="">-- Choose a player --</option>
+              <option value="">— Choose a player —</option>
               {players.map((p) => (
                 <option key={p.id} value={p.id}>
                   {shotPlayerIds.includes(p.id) ? '🟢 ' : '⚪ '}{p.name}
                 </option>
               ))}
             </select>
-            <p className="text-gray-500 text-xs mt-1">🟢 = shot recorded &nbsp; ⚪ = no shot yet</p>
+            <p className="text-gray-600 text-xs mt-1">🟢 = shot recorded &nbsp; ⚪ = no shot yet</p>
           </div>
 
           <div>
-            <label className="text-gray-300 text-sm mb-1 block">Distance to Pin</label>
-            <div className="flex gap-3">
-              <div className="flex-1">
+            <label className="text-gray-400 text-xs uppercase tracking-widest mb-2 block">Distance to Pin</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
                 <input
                   type="number"
                   value={feet}
                   onChange={(e) => setFeet(e.target.value)}
                   required
                   min="0"
-                  placeholder="Feet"
-                  className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
+                  placeholder="0"
+                  className="w-full bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition-colors text-center text-xl font-black"
                 />
-                <p className="text-gray-500 text-xs text-center mt-1">Feet</p>
+                <p className="text-gray-500 text-xs text-center mt-1 uppercase tracking-wide">Feet</p>
               </div>
-              <div className="flex-1">
+              <div>
                 <input
                   type="number"
                   value={inches}
                   onChange={(e) => setInches(e.target.value)}
                   min="0"
                   max="11"
-                  placeholder="Inches"
-                  className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-green-400"
+                  placeholder="0"
+                  className="w-full bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition-colors text-center text-xl font-black"
                 />
-                <p className="text-gray-500 text-xs text-center mt-1">Inches</p>
+                <p className="text-gray-500 text-xs text-center mt-1 uppercase tracking-wide">Inches</p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 bg-gray-800 border border-gray-600 rounded-lg px-4 py-3">
-            <input
-              type="checkbox"
-              id="hio"
-              checked={isHoleInOne}
-              onChange={(e) => setIsHoleInOne(e.target.checked)}
-              className="w-5 h-5 accent-green-400"
-            />
-            <label htmlFor="hio" className="text-white text-lg">🕳️ Hole in One!</label>
+          <div
+            onClick={() => setIsHoleInOne(!isHoleInOne)}
+            className={`cursor-pointer border-2 rounded-xl px-5 py-4 flex items-center justify-between transition-all ${
+              isHoleInOne ? 'border-cyan-500 bg-cyan-600/10' : 'border-gray-700 bg-gray-900'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🕳️</span>
+              <div>
+                <p className="font-black text-white">Hole in One!</p>
+                <p className="text-gray-500 text-sm">Tap to mark</p>
+              </div>
+            </div>
+            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+              isHoleInOne ? 'bg-cyan-500 border-cyan-500' : 'border-gray-600'
+            }`}>
+              {isHoleInOne && <span className="text-white text-xs font-black">✓</span>}
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="bg-green-500 hover:bg-green-400 disabled:bg-gray-600 text-white text-xl font-bold py-4 px-8 rounded-xl mt-2"
+            className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 text-white font-black py-4 rounded-xl transition-all text-lg"
           >
-            {loading ? 'Saving...' : 'Record Shot'}
+            {loading ? 'Saving...' : 'Record Shot →'}
           </button>
         </form>
       </div>
