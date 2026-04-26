@@ -53,6 +53,19 @@ export default function Register() {
     if (!card) { alert('Payment form not ready.'); return }
     setLoading(true)
     try {
+      // Check for duplicate email
+      const { data: existing } = await supabase
+        .from('players')
+        .select('id')
+        .eq('email', form.email)
+        .single()
+
+      if (existing) {
+        alert('This email is already registered! If you want to buy more shots, please let staff know at the venue.')
+        setLoading(false)
+        return
+      }
+
       const result = await card.tokenize()
       if (result.status !== 'OK') {
         alert('Card error: ' + result.errors[0].message)
@@ -122,7 +135,7 @@ export default function Register() {
           <p className="text-gray-400 text-sm">Top 20 advance to the $1M finale</p>
           <div className="flex justify-center gap-3 mt-4">
             {[1,2,3].map(s => (
-              <div key={s} className={`flex items-center gap-1`}>
+              <div key={s} className="flex items-center gap-1">
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black border-2 transition-all ${step >= s ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-700 text-gray-600'}`}>{s}</div>
                 {s < 3 && <div className={`w-8 h-0.5 ${step > s ? 'bg-blue-600' : 'bg-gray-700'}`}></div>}
               </div>
