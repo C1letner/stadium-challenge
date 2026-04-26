@@ -3,8 +3,8 @@ import Link from 'next/link'
 function LogoMark({ size = 80 }: { size?: number }) {
   const s = size
   const cx = s / 2
-  const top = s * 0.15
-  const mid = s * 0.85
+  const top = s * 0.35
+  const mid = s * 0.88
   const left = s * 0.1
   const right = s * 0.9
   const m1l = s * 0.2
@@ -14,16 +14,16 @@ function LogoMark({ size = 80 }: { size?: number }) {
   const m3l = s * 0.38
   const m3r = s * 0.62
   const stickX = cx
-  const stickTop = top - s * 0.12
-  const stickBottom = top + s * 0.02
+  const stickTop = s * 0.04
+  const stickBottom = top
   return (
     <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} fill="none">
-      <polygon points={`${cx},${top} ${left},${mid} ${right},${mid}`} stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
-      <polygon points={`${cx},${top + s*0.1} ${m1l},${mid} ${m1r},${mid}`} fill="#1e293b" stroke="#60a5fa" strokeWidth="1.5"/>
-      <polygon points={`${cx},${top + s*0.2} ${m2l},${mid} ${m2r},${mid}`} fill="#3b82f6"/>
-      <polygon points={`${cx},${top + s*0.3} ${m3l},${mid} ${m3r},${mid}`} fill="#60a5fa"/>
       <line x1={stickX} y1={stickBottom} x2={stickX} y2={stickTop} stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round"/>
-      <polygon points={`${stickX},${stickTop} ${stickX + s*0.18},${stickTop + s*0.08} ${stickX},${stickTop + s*0.16}`} fill="#38bdf8"/>
+      <polygon points={`${stickX},${stickTop} ${stickX + s*0.22},${stickTop + s*0.09} ${stickX},${stickTop + s*0.18}`} fill="#38bdf8"/>
+      <polygon points={`${cx},${top} ${left},${mid} ${right},${mid}`} stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+      <polygon points={`${cx},${top + s*0.08} ${m1l},${mid} ${m1r},${mid}`} fill="#1e293b" stroke="#60a5fa" strokeWidth="1.5"/>
+      <polygon points={`${cx},${top + s*0.16} ${m2l},${mid} ${m2r},${mid}`} fill="#3b82f6"/>
+      <polygon points={`${cx},${top + s*0.24} ${m3l},${mid} ${m3r},${mid}`} fill="#60a5fa"/>
     </svg>
   )
 }
