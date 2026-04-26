@@ -9,6 +9,7 @@ export default function Admin() {
   const [authenticated, setAuthenticated] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [messageType, setMessageType] = useState('success')
   const [shots, setShots] = useState([])
   const [editingShot, setEditingShot] = useState(null)
   const [editFeet, setEditFeet] = useState('')
@@ -39,6 +40,12 @@ export default function Admin() {
     return `${feet}' ${inches}"`
   }
 
+  const showMessage = (msg, type = 'success') => {
+    setMessage(msg)
+    setMessageType(type)
+    setTimeout(() => setMessage(''), 3000)
+  }
+
   const handleReset = async () => {
     const confirmed = confirm('Are you sure you want to reset the leaderboard? This will delete ALL shot attempts.')
     if (!confirmed) return
@@ -48,9 +55,9 @@ export default function Admin() {
       .delete()
       .neq('id', '00000000-0000-0000-0000-000000000000')
     if (error) {
-      setMessage('❌ Error resetting leaderboard.')
+      showMessage('❌ Error resetting leaderboard.', 'error')
     } else {
-      setMessage('✅ Leaderboard has been reset!')
+      showMessage('✅ Leaderboard has been reset!')
       setShots([])
     }
     setLoading(false)
@@ -69,9 +76,9 @@ export default function Admin() {
       .update({ distance_to_pin: totalInches })
       .eq('id', shotId)
     if (error) {
-      setMessage('❌ Error updating shot.')
+      showMessage('❌ Error updating shot.', 'error')
     } else {
-      setMessage('✅ Shot updated!')
+      showMessage('✅ Shot updated!')
       setEditingShot(null)
       fetchShots()
     }
@@ -80,36 +87,35 @@ export default function Admin() {
   const handleDelete = async (shotId) => {
     const confirmed = confirm('Delete this shot?')
     if (!confirmed) return
-    const { error } = await supabase
-      .from('shot_attempts')
-      .delete()
-      .eq('id', shotId)
+    const { error } = await supabase.from('shot_attempts').delete().eq('id', shotId)
     if (error) {
-      setMessage('❌ Error deleting shot.')
+      showMessage('❌ Error deleting shot.', 'error')
     } else {
-      setMessage('✅ Shot deleted!')
+      showMessage('✅ Shot deleted!')
       fetchShots()
     }
   }
 
   if (!authenticated) {
     return (
-      <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-8">
-        <div className="max-w-sm w-full text-center">
-          <h1 className="text-4xl font-bold text-green-400 mb-2">🔒 Admin Access</h1>
-          <p className="text-gray-400 mb-8">Enter your admin PIN to continue</p>
+      <main className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-8">
+        <div className="max-w-sm w-full">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600/20 border border-blue-500/30 rounded-2xl mb-4">
+              <span className="text-3xl">⚙️</span>
+            </div>
+            <h1 className="text-3xl font-black text-white mb-1">Admin Panel</h1>
+            <p className="text-gray-500">Enter your PIN to continue</p>
+          </div>
           <form onSubmit={handlePin} className="flex flex-col gap-4">
             <input
               type="password"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               placeholder="Enter PIN"
-              className="w-full bg-gray-800 text-white border border-gray-600 rounded-lg px-4 py-3 text-center text-2xl tracking-widest focus:outline-none focus:border-green-400"
+              className="w-full bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-4 text-center text-2xl tracking-widest outline-none transition-colors"
             />
-            <button
-              type="submit"
-              className="bg-green-500 hover:bg-green-400 text-white text-xl font-bold py-4 px-8 rounded-xl"
-            >
+            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl transition-all">
               Enter
             </button>
           </form>
@@ -119,38 +125,65 @@ export default function Admin() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-green-400 text-center mb-2">⚙️ Admin Panel</h1>
-        <p className="text-gray-400 text-center mb-8">Million Dollar Mountain Challenge</p>
+    <main className="min-h-screen bg-gray-950 text-white">
+      <div className="relative overflow-hidden bg-gray-900 border-b border-gray-800">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-gray-900 opacity-50"></div>
+        <div className="relative max-w-2xl mx-auto px-6 py-8 text-center">
+          <div className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 tracking-widest uppercase">
+            Admin Only
+          </div>
+          <h1 className="text-3xl font-black text-white mb-1">⚙️ Admin Panel</h1>
+          <p className="text-gray-400">Million Dollar Mountain Challenge</p>
+        </div>
+      </div>
 
+      <div className="max-w-2xl mx-auto px-6 py-8">
         {message && (
-          <div className="bg-gray-800 border border-gray-600 text-white px-4 py-3 rounded-xl mb-6 text-center">
+          <div className={`px-4 py-4 rounded-xl mb-6 text-center font-bold ${
+            messageType === 'success' ? 'bg-green-600/10 border border-green-500/30 text-green-400' : 'bg-red-600/10 border border-red-500/30 text-red-400'
+          }`}>
             {message}
           </div>
         )}
 
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-6">
-          <h2 className="text-xl font-bold text-white mb-2">🗑️ Reset Leaderboard</h2>
-          <p className="text-gray-400 text-sm mb-4">Deletes all shot attempts. Use at the start of a new event.</p>
-          <button
-            onClick={handleReset}
-            disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-500 disabled:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl"
-          >
-            {loading ? 'Resetting...' : 'Reset Leaderboard'}
-          </button>
+        {/* Reset leaderboard */}
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-lg font-black text-white mb-1">🗑️ Reset Leaderboard</h2>
+              <p className="text-gray-500 text-sm">Deletes all shot attempts. Use at the start of a new event.</p>
+            </div>
+            <button
+              onClick={handleReset}
+              disabled={loading}
+              className="bg-red-600 hover:bg-red-500 disabled:bg-gray-700 text-white font-black py-2 px-5 rounded-xl transition-all text-sm whitespace-nowrap ml-4"
+            >
+              {loading ? 'Resetting...' : 'Reset'}
+            </button>
+          </div>
         </div>
 
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-4">✏️ Edit Shot Distances</h2>
-          {shots.length === 0 && <p className="text-gray-400">No shots recorded yet.</p>}
-          {shots.map((shot) => (
-            <div key={shot.id} className="flex items-center justify-between py-3 border-b border-gray-700 last:border-0">
-              <div>
-                <p className="font-bold">{shot.players?.name}</p>
-                <p className="text-gray-400 text-sm">{formatDistance(shot.distance_to_pin)}</p>
+        {/* Edit shots */}
+        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-800">
+            <h2 className="text-lg font-black text-white">✏️ Edit Shot Distances</h2>
+            <p className="text-gray-500 text-sm">{shots.length} shots recorded</p>
+          </div>
+
+          {shots.length === 0 && (
+            <div className="px-6 py-8 text-center text-gray-500">No shots recorded yet.</div>
+          )}
+
+          {shots.map((shot, index) => (
+            <div key={shot.id} className={`px-6 py-4 flex items-center justify-between border-b border-gray-800/50 last:border-0 ${index % 2 === 0 ? 'bg-white/[0.01]' : ''}`}>
+              <div className="flex items-center gap-4">
+                <span className="text-gray-600 text-sm font-bold w-6">{index + 1}</span>
+                <div>
+                  <p className="font-bold text-white uppercase tracking-wide text-sm">{shot.players?.name}</p>
+                  <p className="text-blue-400 font-black">{formatDistance(shot.distance_to_pin)}</p>
+                </div>
               </div>
+
               {editingShot === shot.id ? (
                 <div className="flex items-center gap-2">
                   <input
@@ -158,22 +191,22 @@ export default function Admin() {
                     value={editFeet}
                     onChange={(e) => setEditFeet(e.target.value)}
                     placeholder="Ft"
-                    className="w-16 bg-gray-700 text-white border border-gray-500 rounded px-2 py-1 text-center"
+                    className="w-16 bg-gray-800 text-white border border-gray-600 focus:border-blue-500 rounded-lg px-2 py-1.5 text-center outline-none"
                   />
                   <input
                     type="number"
                     value={editInches}
                     onChange={(e) => setEditInches(e.target.value)}
                     placeholder="In"
-                    className="w-16 bg-gray-700 text-white border border-gray-500 rounded px-2 py-1 text-center"
+                    className="w-16 bg-gray-800 text-white border border-gray-600 focus:border-blue-500 rounded-lg px-2 py-1.5 text-center outline-none"
                   />
-                  <button onClick={() => handleSaveEdit(shot.id)} className="bg-green-500 text-white px-3 py-1 rounded font-bold">Save</button>
-                  <button onClick={() => setEditingShot(null)} className="bg-gray-600 text-white px-3 py-1 rounded">Cancel</button>
+                  <button onClick={() => handleSaveEdit(shot.id)} className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-sm transition-all">Save</button>
+                  <button onClick={() => setEditingShot(null)} className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-lg text-sm transition-all">Cancel</button>
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <button onClick={() => handleEdit(shot)} className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded font-bold">Edit</button>
-                  <button onClick={() => handleDelete(shot.id)} className="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded font-bold">Delete</button>
+                  <button onClick={() => handleEdit(shot)} className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white px-3 py-1.5 rounded-lg font-bold text-sm transition-all">Edit</button>
+                  <button onClick={() => handleDelete(shot.id)} className="bg-red-600/20 hover:bg-red-600/40 border border-red-600/30 text-red-400 px-3 py-1.5 rounded-lg font-bold text-sm transition-all">Delete</button>
                 </div>
               )}
             </div>
