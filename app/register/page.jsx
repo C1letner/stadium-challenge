@@ -47,8 +47,10 @@ export default function Register() {
     } catch (err) { console.error('Square init error:', err) }
   }
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
-
+const handleChange = (e) => {
+  const value = e.target.name === 'name' ? e.target.value.toUpperCase() : e.target.value
+  setForm({ ...form, [e.target.name]: value })
+}
   const handlePayment = async () => {
     if (!card) { alert('Payment form not ready.'); return }
     setLoading(true)

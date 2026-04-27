@@ -10,6 +10,7 @@ export default function ShotEntry() {
   const [players, setPlayers] = useState([])
   const [shotPlayerIds, setShotPlayerIds] = useState([])
   const [selectedPlayer, setSelectedPlayer] = useState('')
+  const [search, setSearch] = useState('')
   const [feet, setFeet] = useState('')
   const [inches, setInches] = useState('')
   const [isHoleInOne, setIsHoleInOne] = useState(false)
@@ -63,10 +64,15 @@ export default function ShotEntry() {
       setInches('')
       setIsHoleInOne(false)
       setSelectedPlayer('')
+      setSearch('')
       fetchShotPlayerIds()
     }
     setLoading(false)
   }
+
+  const filteredPlayers = players.filter(p =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   if (!authenticated) {
     return (
@@ -118,7 +124,14 @@ export default function ShotEntry() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div>
-            <label className="text-gray-400 text-xs uppercase tracking-widest mb-2 block">Select Player</label>
+            <label className="text-gray-400 text-xs uppercase tracking-widest mb-2 block">Search & Select Player</label>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setSelectedPlayer('') }}
+              placeholder="🔍 Type to search players..."
+              className="w-full bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition-colors mb-2"
+            />
             <select
               value={selectedPlayer}
               onChange={(e) => setSelectedPlayer(e.target.value)}
@@ -126,13 +139,13 @@ export default function ShotEntry() {
               className="w-full bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition-colors"
             >
               <option value="">— Choose a player —</option>
-              {players.map((p) => (
+              {filteredPlayers.map((p) => (
                 <option key={p.id} value={p.id}>
                   {shotPlayerIds.includes(p.id) ? '🟢 ' : '⚪ '}{p.name}
                 </option>
               ))}
             </select>
-            <p className="text-gray-600 text-xs mt-1">🟢 = shot recorded &nbsp; ⚪ = no shot yet</p>
+            <p className="text-gray-600 text-xs mt-1">🟢 = shot recorded &nbsp; ⚪ = no shot yet · {filteredPlayers.length} players shown</p>
           </div>
 
           <div>

@@ -1,7 +1,26 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { supabase } from '../lib/supabase'
 
-export default function Home() {
+async function getLeader() {
+  const { data } = await supabase
+    .from('shot_attempts')
+    .select('player_id, distance_to_pin, players(name)')
+    .order('distance_to_pin', { ascending: true })
+    .limit(1)
+    .single()
+  return data
+}
+
+function formatDistance(totalInches: number) {
+  const feet = Math.floor(totalInches / 12)
+  const inches = Math.round(totalInches % 12)
+  return `${feet}' ${inches}"`
+}
+
+export default async function Home() {
+  const leader = await getLeader()
+
   return (
     <main className="min-h-screen bg-gray-950 text-white">
       <div className="relative overflow-hidden">
@@ -33,44 +52,63 @@ export default function Home() {
 
           <div className="flex flex-col gap-3">
             <Link href="/register">
-              <button className="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-lg font-black py-4 px-8 rounded-xl transition-all shadow-lg shadow-blue-900">
-                🏌️ Enter Competition
-              </button>
+              <div className="w-full bg-gray-900 border-2 border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer hover:border-blue-400 hover:bg-blue-600/10">
+                <div className="text-left">
+                  <p className="font-black text-white text-xl uppercase tracking-wide">Enter Competition</p>
+                  <p className="text-blue-400 text-sm">Buy shots · Start qualifying</p>
+                </div>
+                <span className="text-blue-400 font-black text-2xl">→</span>
+              </div>
             </Link>
             <Link href="/leaderboard">
-              <button className="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white text-lg font-bold py-4 px-8 rounded-xl transition-all">
-                📊 View Leaderboard
-              </button>
+              <div className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer hover:border-gray-500">
+                <div className="text-left">
+                  <p className="font-black text-white text-xl uppercase tracking-wide">View Leaderboard</p>
+                  <p className="text-gray-400 text-sm">See current standings</p>
+                </div>
+                <span className="text-gray-400 font-black text-2xl">→</span>
+              </div>
             </Link>
           </div>
         </div>
       </div>
 
+      {/* Stats Bar */}
       <div className="bg-gray-900 border-y border-gray-800 px-6 py-4">
         <div className="max-w-lg mx-auto grid grid-cols-3 gap-4 text-center">
           <div>
             <p className="text-2xl font-black text-blue-400">$1M</p>
-            <p className="text-gray-500 text-xs uppercase tracking-wide">Prize Pool</p>
+            <p className="text-gray-500 text-xs uppercase tracking-wide">Grand Prize</p>
           </div>
           <div>
             <p className="text-2xl font-black text-cyan-400">Top 20</p>
             <p className="text-gray-500 text-xs uppercase tracking-wide">Advance</p>
           </div>
           <div>
-            <p className="text-2xl font-black text-white">Live</p>
-            <p className="text-gray-500 text-xs uppercase tracking-wide">Leaderboard</p>
+            {leader ? (
+              <>
+                <p className="text-lg font-black text-yellow-400 truncate">{leader.players?.name}</p>
+                <p className="text-gray-500 text-xs uppercase tracking-wide">Leading · {formatDistance(leader.distance_to_pin)}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-2xl font-black text-white">—</p>
+                <p className="text-gray-500 text-xs uppercase tracking-wide">No leader yet</p>
+              </>
+            )}
           </div>
         </div>
       </div>
 
+      {/* Packages */}
       <div className="max-w-lg mx-auto px-6 py-10">
         <h2 className="text-xl font-black text-white mb-1">Shot Packages</h2>
-        <p className="text-gray-500 text-sm mb-6">Buy shots to qualify for the finale</p>
+        <p className="text-gray-500 text-sm mb-6">Buy shots to qualify for the $1M finale</p>
         <div className="flex flex-col gap-3">
           <Link href="/register">
             <div className="bg-gray-900 border border-gray-800 hover:border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer group">
               <div>
-                <p className="font-black text-white text-lg">3 Shots</p>
+                <p className="font-black text-white text-lg uppercase tracking-wide">3 Shots</p>
                 <p className="text-gray-500 text-sm">Starter package</p>
               </div>
               <div className="text-right">
@@ -83,7 +121,7 @@ export default function Home() {
             <div className="bg-gray-900 border-2 border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer relative">
               <div className="absolute -top-3 left-4 bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">MOST POPULAR</div>
               <div>
-                <p className="font-black text-white text-lg">6 Shots</p>
+                <p className="font-black text-white text-lg uppercase tracking-wide">6 Shots</p>
                 <p className="text-gray-500 text-sm">Best bang for your buck</p>
               </div>
               <div className="text-right">
@@ -95,7 +133,7 @@ export default function Home() {
           <Link href="/register">
             <div className="bg-gray-900 border border-gray-800 hover:border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer group">
               <div>
-                <p className="font-black text-white text-lg">10 Shots</p>
+                <p className="font-black text-white text-lg uppercase tracking-wide">10 Shots</p>
                 <p className="text-gray-500 text-sm">Best value</p>
               </div>
               <div className="text-right">
