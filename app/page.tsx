@@ -69,15 +69,6 @@ export default async function Home() {
                 <span className="text-blue-400 font-black text-2xl">→</span>
               </div>
             </Link>
-            <Link href="/register">
-              <div className="w-full bg-gray-900 border-2 border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer hover:border-blue-400 hover:bg-blue-600/10">
-                <div className="text-left">
-                  <p className="font-black text-white text-xl uppercase tracking-wide">Enter Competition</p>
-                  <p className="text-blue-400 text-sm">Buy shots · Start qualifying</p>
-                </div>
-                <span className="text-blue-400 font-black text-2xl">→</span>
-              </div>
-            </Link>
             <Link href="/leaderboard">
               <div className="w-full bg-gray-900 border-2 border-gray-700 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer hover:border-gray-500">
                 <div className="text-left">
