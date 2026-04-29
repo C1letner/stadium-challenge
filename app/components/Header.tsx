@@ -22,6 +22,7 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-4">
+          <Link href="/book" className="text-blue-400 hover:text-blue-300 text-sm font-bold transition-colors">📅 Book</Link>
           <Link href="/register" className="text-gray-400 hover:text-blue-400 text-sm font-medium transition-colors">Register</Link>
           <Link href="/leaderboard" className="text-gray-400 hover:text-blue-400 text-sm font-medium transition-colors">Leaderboard</Link>
           <Link href="/shots" className="text-gray-400 hover:text-blue-400 text-sm font-medium transition-colors">Staff</Link>
@@ -43,6 +44,9 @@ export default function Header() {
       {/* Mobile dropdown */}
       {menuOpen && (
         <nav className="md:hidden flex flex-col px-4 pb-4 gap-1 border-t border-gray-800">
+          <Link href="/book" onClick={() => setMenuOpen(false)} className="text-blue-400 hover:text-blue-300 font-bold py-3 border-b border-gray-800 transition-colors">
+            📅 Book a Tee Time
+          </Link>
           <Link href="/register" onClick={() => setMenuOpen(false)} className="text-gray-300 hover:text-blue-400 font-medium py-3 border-b border-gray-800 transition-colors">
             🏌️ Register
           </Link>

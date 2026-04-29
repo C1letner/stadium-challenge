@@ -3,19 +3,28 @@ import Image from 'next/image'
 import { supabase } from '../lib/supabase'
 
 async function getLeader() {
-  const { data } = await supabase
-    .from('shot_attempts')
-    .select('player_id, distance_to_pin, players(name)')
-    .order('distance_to_pin', { ascending: true })
-    .limit(1)
-    .single()
-  return data
+  try {
+    const { data } = await supabase
+      .from('shot_attempts')
+      .select('player_id, distance_to_pin, players(name)')
+      .order('distance_to_pin', { ascending: true })
+      .limit(1)
+      .single()
+    return data
+  } catch { return null }
 }
 
 function formatDistance(totalInches: number) {
   const feet = Math.floor(totalInches / 12)
   const inches = Math.round(totalInches % 12)
   return `${feet}' ${inches}"`
+}
+
+function formatLeaderName(fullName: string | undefined) {
+  if (!fullName) return '—'
+  const parts = fullName.trim().split(' ')
+  if (parts.length === 1) return parts[0]
+  return `${parts[0]} ${parts[parts.length - 1][0]}.`
 }
 
 export default async function Home() {
@@ -51,6 +60,15 @@ export default async function Home() {
           <p className="text-gray-500 mb-10">Closest to the pin advances to the $1M finale</p>
 
           <div className="flex flex-col gap-3">
+            <Link href="/book">
+              <div className="w-full bg-gray-900 border-2 border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer hover:border-blue-400 hover:bg-blue-600/10">
+                <div className="text-left">
+                  <p className="font-black text-white text-xl uppercase tracking-wide">Book a Tee Time</p>
+                  <p className="text-blue-400 text-sm">Pick your slot · Pay · Qualify</p>
+                </div>
+                <span className="text-blue-400 font-black text-2xl">→</span>
+              </div>
+            </Link>
             <Link href="/register">
               <div className="w-full bg-gray-900 border-2 border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer hover:border-blue-400 hover:bg-blue-600/10">
                 <div className="text-left">
@@ -87,7 +105,7 @@ export default async function Home() {
           <div>
             {leader ? (
               <>
-                <p className="text-lg font-black text-yellow-400 truncate">{leader.players?.name}</p>
+                <p className="text-lg font-black text-yellow-400 truncate">{formatLeaderName((leader.players as any)?.name)}</p>
                 <p className="text-gray-500 text-xs uppercase tracking-wide">Leading · {formatDistance(leader.distance_to_pin)}</p>
               </>
             ) : (
@@ -105,7 +123,7 @@ export default async function Home() {
         <h2 className="text-xl font-black text-white mb-1">Shot Packages</h2>
         <p className="text-gray-500 text-sm mb-6">Buy shots to qualify for the $1M finale</p>
         <div className="flex flex-col gap-3">
-          <Link href="/register">
+          <Link href="/book">
             <div className="bg-gray-900 border border-gray-800 hover:border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer group">
               <div>
                 <p className="font-black text-white text-lg uppercase tracking-wide">3 Shots</p>
@@ -113,11 +131,11 @@ export default async function Home() {
               </div>
               <div className="text-right">
                 <p className="text-2xl font-black text-blue-400">$30</p>
-                <p className="text-gray-600 text-xs group-hover:text-blue-400 transition-all">Enter →</p>
+                <p className="text-gray-600 text-xs group-hover:text-blue-400 transition-all">Book →</p>
               </div>
             </div>
           </Link>
-          <Link href="/register">
+          <Link href="/book">
             <div className="bg-gray-900 border-2 border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer relative">
               <div className="absolute -top-3 left-4 bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">MOST POPULAR</div>
               <div>
@@ -126,11 +144,11 @@ export default async function Home() {
               </div>
               <div className="text-right">
                 <p className="text-2xl font-black text-blue-400">$50</p>
-                <p className="text-gray-600 text-xs">Enter →</p>
+                <p className="text-gray-600 text-xs">Book →</p>
               </div>
             </div>
           </Link>
-          <Link href="/register">
+          <Link href="/book">
             <div className="bg-gray-900 border border-gray-800 hover:border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer group">
               <div>
                 <p className="font-black text-white text-lg uppercase tracking-wide">10 Shots</p>
@@ -138,7 +156,7 @@ export default async function Home() {
               </div>
               <div className="text-right">
                 <p className="text-2xl font-black text-blue-400">$80</p>
-                <p className="text-gray-600 text-xs group-hover:text-blue-400 transition-all">Enter →</p>
+                <p className="text-gray-600 text-xs group-hover:text-blue-400 transition-all">Book →</p>
               </div>
             </div>
           </Link>

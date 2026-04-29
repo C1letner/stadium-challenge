@@ -67,17 +67,26 @@ export default function Admin() {
   }
 
   const handleReset = async () => {
-    const confirmed = confirm('Reset the leaderboard? This deletes ALL shot attempts.')
+    const confirmed = confirm('⚠️ RESET EVENT?\n\nThis will permanently delete:\n• ALL shot attempts\n• ALL players\n• ALL bookings (calendar)\n\nThis cannot be undone.')
     if (!confirmed) return
+    const doubleCheck = confirm('Are you absolutely sure? This is your last chance to cancel.')
+    if (!doubleCheck) return
+
     setLoading(true)
-    const { error } = await supabase
-      .from('shot_attempts')
-      .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000')
-    if (error) {
-      showMessage('❌ Error resetting.', 'error')
+    const blank = '00000000-0000-0000-0000-000000000000'
+
+    const { error: shotsError } = await supabase
+      .from('shot_attempts').delete().neq('id', blank)
+    const { error: bookingsError } = await supabase
+      .from('bookings').delete().neq('id', blank)
+    const { error: playersError } = await supabase
+      .from('players').delete().neq('id', blank)
+
+    if (shotsError || bookingsError || playersError) {
+      showMessage('❌ Error resetting event.', 'error')
+      console.error({ shotsError, bookingsError, playersError })
     } else {
-      showMessage('✅ Leaderboard reset!')
+      showMessage('✅ Event fully reset!')
       fetchData()
     }
     setLoading(false)
@@ -179,14 +188,14 @@ export default function Admin() {
         )}
 
         {/* Reset */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 mb-6 flex items-center justify-between">
+        <div className="bg-gray-900 border-2 border-red-900/50 rounded-xl p-5 mb-6 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-black text-white mb-0.5">🗑️ Reset Leaderboard</h2>
-            <p className="text-gray-500 text-sm">Deletes all shot attempts. Use at start of new event.</p>
+            <h2 className="text-lg font-black text-white mb-0.5">🗑️ Reset Event</h2>
+            <p className="text-gray-500 text-sm">Wipes all players, shots, and bookings. Use at start of new event.</p>
           </div>
           <button onClick={handleReset} disabled={loading}
             className="bg-red-600 hover:bg-red-500 disabled:bg-gray-700 text-white font-black py-2 px-5 rounded-xl transition-all text-sm ml-4 whitespace-nowrap">
-            {loading ? 'Resetting...' : 'Reset'}
+            {loading ? 'Resetting...' : 'Reset Event'}
           </button>
         </div>
 
