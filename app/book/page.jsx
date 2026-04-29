@@ -219,7 +219,7 @@ export default function BookPage() {
                 value={selectedDate}
                 min={today}
                 onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime('') }}
-                className="w-full bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition-colors"
+                className="w-full [color-scheme:dark] bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition-colors"
               />
             </div>
 
