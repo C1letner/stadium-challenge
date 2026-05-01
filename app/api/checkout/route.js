@@ -2,9 +2,25 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+function formatBookingDate(dateStr) {
+  if (!dateStr) return ''
+  const [year, month, day] = dateStr.split('-')
+  const date = new Date(year, month - 1, day)
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+function formatBookingTime(timeStr) {
+  if (!timeStr) return ''
+  const [h, m] = timeStr.split(':')
+  const hour = parseInt(h)
+  const displayHour = hour % 12 === 0 ? 12 : hour % 12
+  const ampm = hour < 12 ? 'AM' : 'PM'
+  return `${displayHour}:${m} ${ampm}`
+}
+
 export async function POST(request) {
   try {
-    const { packageType, playerName, playerEmail, playerPhone, sourceId } = await request.json()
+    const { packageType, playerName, playerEmail, playerPhone, sourceId, bookingDate, bookingTime } = await request.json()
 
     const packages = {
       '3shots': { amount: 3000, label: '3 Shots', shots: 3, price: '$30' },
@@ -43,6 +59,19 @@ export async function POST(request) {
       return Response.json({ error: data.errors[0].detail }, { status: 500 })
     }
 
+    const paymentId = data.payment.id
+    const paymentDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    const formattedDate = formatBookingDate(bookingDate)
+    const formattedTime = formatBookingTime(bookingTime)
+
+    const bookingBlock = (formattedDate && formattedTime) ? `
+      <div style="background: #1f2937; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #3b82f6;">
+        <p style="color: #60a5fa; font-weight: bold; margin: 0 0 8px 0;">📅 Your Tee Time</p>
+        <p style="color: #ffffff; font-size: 18px; margin: 0 0 4px 0;">${formattedDate}</p>
+        <p style="color: #ffffff; font-size: 18px; margin: 0;">${formattedTime}</p>
+      </div>
+    ` : ''
+
     // Send confirmation email
     await resend.emails.send({
       from: 'Million Dollar Mountain Challenge <info@mrluckysgolf.com>',
@@ -57,14 +86,34 @@ export async function POST(request) {
           
           <h2 style="color: #ffffff; font-size: 22px;">You're registered, ${playerName}! 🎉</h2>
           
+          ${bookingBlock}
+
           <div style="background: #1f2937; border-radius: 8px; padding: 20px; margin: 20px 0;">
             <p style="color: #4ade80; font-weight: bold; margin: 0 0 8px 0;">Your Package</p>
             <p style="color: #ffffff; font-size: 20px; margin: 0;">${pkg.label} — ${pkg.price}</p>
           </div>
 
+          <div style="background: #1f2937; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <p style="color: #4ade80; font-weight: bold; margin: 0 0 12px 0;">🧾 Receipt</p>
+            <table style="width: 100%; color: #d1d5db; font-size: 14px;">
+              <tr>
+                <td style="padding: 4px 0; color: #9ca3af;">Amount paid:</td>
+                <td style="padding: 4px 0; text-align: right; color: #ffffff; font-weight: bold;">${pkg.price}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 0; color: #9ca3af;">Payment date:</td>
+                <td style="padding: 4px 0; text-align: right; color: #ffffff;">${paymentDate}</td>
+              </tr>
+              <tr>
+                <td style="padding: 4px 0; color: #9ca3af;">Transaction ID:</td>
+                <td style="padding: 4px 0; text-align: right; color: #ffffff; font-family: monospace; font-size: 12px;">${paymentId}</td>
+              </tr>
+            </table>
+          </div>
+
           <h3 style="color: #4ade80;">📍 Next Steps</h3>
           <ol style="color: #d1d5db; line-height: 2;">
-            <li>Visit Mr Lucky's Golf simulator at your scheduled time</li>
+            <li>Visit Mr Lucky's Golf at your scheduled time</li>
             <li>Check in at the front desk and show this email</li>
             <li>Take your ${pkg.shots} shots at the closest-to-the-pin challenge</li>
             <li>Your best shot will appear on the live leaderboard</li>
@@ -77,7 +126,7 @@ export async function POST(request) {
 
           <p style="color: #9ca3af; font-size: 14px; text-align: center; margin-top: 30px;">
             Questions? Contact us at info@mrluckysgolf.com<br>
-            Mr Lucky's Golf | 1327 E. White Mountain Blvd
+            Mr Lucky's Golf | 559 E. Oak Meadow Ln, Pinetop AZ 85935
           </p>
         </div>
       `,

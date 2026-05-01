@@ -124,12 +124,14 @@ export default function BookPage() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+ body: JSON.stringify({
           sourceId: result.token,
           packageType: selectedPackage,
           playerName: form.name,
           playerEmail: form.email,
           playerPhone: form.phone,
+          bookingDate: selectedDate,
+          bookingTime: selectedTime,
         }),
       })
 
