@@ -3,9 +3,18 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 
-const HOURS_START = 11
+const HOURS_START = 9
 const HOURS_END = 20
 const SLOT_MINUTES = 5
+
+const EVENT_DATES = [
+  { value: '2026-07-03', label: 'Fri Jul 3', sublabel: 'Qualifier 1 · Day 1', qualifier: 1 },
+  { value: '2026-07-04', label: 'Sat Jul 4', sublabel: 'Qualifier 1 · Day 2', qualifier: 1 },
+  { value: '2026-07-05', label: 'Sun Jul 5', sublabel: 'Qualifier 1 · Day 3', qualifier: 1 },
+  { value: '2026-09-04', label: 'Fri Sep 4', sublabel: 'Qualifier 2 · Day 1', qualifier: 2 },
+  { value: '2026-09-05', label: 'Sat Sep 5', sublabel: 'Qualifier 2 · Day 2', qualifier: 2 },
+  { value: '2026-09-06', label: 'Sun Sep 6', sublabel: 'Qualifier 2 · Day 3', qualifier: 2 },
+]
 
 function generateTimeSlots() {
   const slots = []
@@ -48,6 +57,7 @@ export default function BookPage() {
   const timeSlots = generateTimeSlots()
 
   const today = new Date().toISOString().split('T')[0]
+  const availableDates = EVENT_DATES.filter(d => d.value >= today)
 
   useEffect(() => {
     if (selectedDate) fetchBookedSlots(selectedDate)
@@ -124,7 +134,7 @@ export default function BookPage() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify({
+        body: JSON.stringify({
           sourceId: result.token,
           packageType: selectedPackage,
           playerName: form.name,
@@ -215,14 +225,36 @@ export default function BookPage() {
         {step === 1 && (
           <div>
             <div className="mb-6">
-              <label className="text-gray-400 text-xs uppercase tracking-widest mb-2 block">Select Date</label>
-              <input
-                type="date"
-                value={selectedDate}
-                min={today}
-                onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime('') }}
-                className="w-full [color-scheme:dark] bg-gray-900 text-white border border-gray-700 focus:border-blue-500 rounded-xl px-4 py-3 outline-none transition-colors"
-              />
+              <label className="text-gray-400 text-xs uppercase tracking-widest mb-3 block">Select Event Date</label>
+
+              {availableDates.length === 0 ? (
+                <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 text-center">
+                  <p className="text-gray-400">No upcoming qualifiers scheduled.</p>
+                  <p className="text-gray-500 text-sm mt-1">Check back soon for new dates.</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {availableDates.map((d) => (
+                    <button
+                      key={d.value}
+                      onClick={() => { setSelectedDate(d.value); setSelectedTime('') }}
+                      className={`text-left rounded-xl p-4 border-2 transition-all ${
+                        selectedDate === d.value
+                          ? 'bg-blue-600/20 border-blue-500'
+                          : 'bg-gray-900 border-gray-800 hover:border-gray-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-black text-white text-lg">{d.label}</p>
+                          <p className="text-blue-400 text-xs uppercase tracking-wide">{d.sublabel}</p>
+                        </div>
+                        {selectedDate === d.value && <span className="text-blue-400 font-black text-xl">✓</span>}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {selectedDate && (

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { supabase } from '../lib/supabase'
+import EventBanner from './components/EventBanner'
 
 async function getLeader() {
   try {
@@ -57,9 +58,11 @@ export default async function Home() {
             </span>
           </h1>
           <p className="text-gray-400 text-lg mb-2">Mr Lucky's Golf</p>
-          <p className="text-gray-500 mb-10">Closest to the pin advances to the $1M finale</p>
+          <p className="text-gray-500 mb-8">Closest to the pin advances to the $1M finale</p>
 
-          <div className="flex flex-col gap-3">
+          <EventBanner />
+
+          <div className="flex flex-col gap-3 mt-8">
             <Link href="/book">
               <div className="w-full bg-gray-900 border-2 border-blue-500 rounded-xl p-4 flex items-center justify-between transition-all cursor-pointer hover:border-blue-400 hover:bg-blue-600/10">
                 <div className="text-left">
@@ -90,8 +93,8 @@ export default async function Home() {
             <p className="text-gray-500 text-xs uppercase tracking-wide">Grand Prize</p>
           </div>
           <div>
-            <p className="text-2xl font-black text-cyan-400">Top 20</p>
-            <p className="text-gray-500 text-xs uppercase tracking-wide">Advance</p>
+            <p className="text-2xl font-black text-cyan-400">20</p>
+            <p className="text-gray-500 text-xs uppercase tracking-wide">Finalists</p>
           </div>
           <div>
             {leader ? (
